@@ -1,0 +1,97 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0/water";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
+    outlet
+    {
+        type            inletOutlet;
+        value           $internalField;
+        inletValue      $internalField;
+    }
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 300;
+    }
+    outer_1
+    {
+        type            codedFixedValue;
+        value           uniform 390;
+
+        name            temperatureGradient_outer1;
+        code 
+        #{
+            const fvPatch& patch  = this->patch();
+            const vectorField& Cf = patch.Cf();
+            scalarField& field = *this;
+
+            forAll(Cf, i) {
+                field[i] = 300 + 5 * Cf[i].z();
+            }
+        #};
+    }
+
+    outer_2
+    {
+        type            codedFixedValue;
+        value           uniform 390;
+
+        name            temperatureGradient_outer2;
+        code 
+        #{
+            const fvPatch& patch  = this->patch();
+            const vectorField& Cf = patch.Cf();
+            scalarField& field = *this;
+
+            forAll(Cf, i) {
+                field[i] = 300 + 5 * Cf[i].z();
+            }
+        #};        
+    }
+    bottom_1
+    {
+        type            fixedValue;
+        value           uniform 390;
+    }
+    bottom_2
+    {
+        type            fixedValue;
+        value           uniform 390;
+    }
+    bottom_3
+    {
+        type            fixedValue;
+        value           uniform 390;
+    }
+    water_to_pipe
+    {
+        type            compressible::turbulentTemperatureCoupledBaffleMixed;
+        value           $internalField;
+        Tnbr            T;
+        kappaMethod     fluidThermo;
+    }
+    internalField
+    {
+        type            fixedGradient;
+        gradient        uniform (0.01 0.01 0.01);
+    }
+}

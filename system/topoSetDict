@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1912                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    // innerFluid
+    {
+        name	r1;
+        type	cellSet;
+        action	new;
+        source cylinderToCell;
+        sourceInfo
+        {
+            p1 ( 0 0 0);
+            p2 (0 0 15.000000);
+            radius 0.707107;
+        }
+    }
+    {
+        name	r1;
+        type	cellSet;
+        action	add;
+        source cylinderToCell;
+        sourceInfo
+        {
+            p1 ( 0 0 15.0000);
+            p2 (0 0 18.000000);
+            radius 1.000000;
+        }
+    }
+    {
+        name	r1;
+        type	cellSet;
+        action	add;
+        source cylinderAnnulusToCell;
+        sourceInfo
+        {
+            p1 ( 0 0 0);
+            p2 (0 0 15.000000);
+            outerRadius 1.000000;
+            innerRadius 0.78107;
+        }
+    }
+    {
+        name	water;
+        type	cellZoneSet;
+        action	new;
+        source setToCellZone;
+        sourceInfo
+        { set r1; }
+    }
+    // pipe
+    {
+        name	r4;
+        type	cellSet;
+        action	new;
+        source cylinderAnnulusToCell;
+        sourceInfo
+        {
+            p1 ( 0 0 0);
+            p2 (0 0 15.000000);
+            outerRadius 0.78107;
+            innerRadius 0.707107;
+        }
+    }
+    {
+        name	pipe;
+        type	cellZoneSet;
+        action	new;
+        source setToCellZone;
+        sourceInfo
+        { set r4; }
+    }
+    
+);
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
